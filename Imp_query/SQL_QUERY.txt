@@ -1,0 +1,140 @@
+1. Query the list of CITY names starting with vowels (i.e., a, e, i, o, or u) from STATION. Your result cannot contain duplicates.
+--
+select distinct city from station where city like 'A%' or city like 'E%' or city like 'I%' or city like 'O%' or city like 'U%';
+
+
+2. Query the list of CITY names from STATION which have vowels (i.e., a, e, i, o, and u) as both their first and last characters. Your result cannot contain duplicates.
+--
+select distinct city from station where (city like 'A%' or city like 'E%' or city like 'I%' or city like 'O%' or city like 'U%') and
+(city like '%a' or city like '%e' or city like '%i' or city like '%o' or city like '%u');
+
+
+3. Query the list of CITY names from STATION that do not start with vowels. Your result cannot contain duplicates.
+--
+select distinct city from station where city not like 'A%' and city not like 'E%' and city not like 'I%' and city not like 'O%' and city not like 'U%';
+
+
+4. Query the Name of any student in STUDENTS who scored higher than  Marks. Order your output by the last three characters of each name. If two or more students both have names ending in the same last three characters (i.e.: Bobby, Robby, etc.), secondary sort them by ascending ID.
+--
+select name from students where marks>'75' order by substring(name,len(name)-2,3) asc,id asc;
+
+
+5. Select type of the triangle.
+--
+select case when (A+B<=C OR B+C<=A OR C+A<=B) then 'Not A Triangle' when (A=B AND B=C) then 'Equilateral' when (A=B OR B=C OR C=A) then 'Isosceles' else 'Scalene' end as TypeOfTriangle from triangles;
+
+
+6. Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by the first letter of each profession as a parenthetical (i.e.: enclosed in parentheses). For example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
+Query the number of ocurrences of each occupation in OCCUPATIONS. Sort the occurrences in ascending order.
+--
+SELECT CONCAT(name, '(', LEFT(occupation, 1), ')') as full_name  FROM OCCUPATIONS UNION SELECT 
+CONCAT('There are a total of ', COUNT(occupation), ' ', LOWER(occupation), 's.') AS full_name FROM OCCUPATIONS GROUP BY 
+occupation ORDER BY full_name ASC;
+
+
+7. Query the average population for all cities in CITY, rounded down to the nearest integer.
+--
+select floor(avg(population)) from city;
+
+
+8. Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, but did 
+realize her keyboard's  key was broken until after completing the calculation. She wants your help finding the difference 
+between her miscalculation (using salaries with any zeros removed), and the actual average salary.
+Write a query calculating the amount of error (i.e.:  average monthly salaries), and round it up to the next integer.
+--
+select cast(ceiling(avg(cast(salary as float))-avg(cast(replace(convert(varchar(6),salary),'0','') as float))) as int) from employees;
+
+
+9. We define an employee's total earnings to be their monthly  worked, and the maximum total earnings to be the maximum 
+total earnings for any employee in the Employee table. Write a query to find the maximum total earnings for all employees
+ as well as the total number of employees who have maximum total earnings. Then print these values as  space-separated 
+integers.
+--
+select top 1 (months*salary),count(*) from employee group by (months*salary) order by (months*salary) desc;
+
+10. Query the following two values from the STATION table:
+
+The sum of all values in LAT_N rounded to a scale of 2 decimal places.
+The sum of all values in LONG_W rounded to a scale of 2 decimal places.
+
+-- select cast(round(sum(LAT_N),2) as numeric(38,2)) , cast(round(sum(LONG_W),2) as numeric(38,2))from station;
+
+
+11. Query the sum of Northern Latitudes (LAT_N) from STATION having values greater than 38.7880 and less than 137.2345. 
+Truncate your answer to 4 decimal places.
+
+-- select cast(round(sum(LAT_N),4) as numeric(38,4)) from station where LAT_N between '38.7880' and '137.2345';
+
+12. Query the Western Longitude (LONG_W) for the largest Northern Latitude (LAT_N) in STATION that is less than 137.2345. 
+Round your answer to 4 decimal places. 
+
+-- select cast(round(LONG_W,4) as numeric(38,4)) from station where LAT_N=(select max(LAT_N) from station where 
+LAT_N<137.2345);
+
+13. Query the Manhattan Distance between points  and  and round it to a scale of 4 decimal places.
+
+-- select cast(round((abs(min(LAT_N)-max(LAT_N))+abs(min(LONG_W)-max(LONG_W))),4) as numeric(38,4)) from station;
+
+14. Query the Euclidean Distance between points  and  and round it to a scale of 4 decimal places.
+
+-- select cast(round(sqrt(square(min(LAT_N)-max(LAT_N))+square(min(LONG_W)-max(LONG_W))),4) as numeric(38,4)) from station;
+
+15. Given the CITY and COUNTRY tables, query the sum of the populations of all cities where the CONTINENT is 'Asia'.
+
+-- select sum(c.population) from city c inner join country cn on c.countrycode=cn.code where cn.continent='Asia';
+
+16. Given the CITY and COUNTRY tables, query the names of all cities where the CONTINENT is 'Africa'.
+
+-- select c.name from city c inner join country cn on c.countrycode=cn.code where cn.continent='Africa';
+
+17. Given the CITY and COUNTRY tables, query the names of all the continents (COUNTRY.Continent) and their respective
+ average city populations (CITY.Population) rounded down to the nearest integer.
+
+-- select cn.continent , floor(avg(c.population)) from city c inner join country cn on c.countrycode=cn.code group 
+by cn.continent;
+
+18. Ketty gives Eve a task to generate a report containing three columns: Name, Grade and Mark. Ketty doesn't want the NAMES
+ of those students who received a grade lower than 8. The report must be in descending order by grade -- i.e. higher grades 
+are entered first. If there is more than one student with the same grade (8-10) assigned to them, order those particular 
+students by their name alphabetically. Finally, if the grade is lower than 8, use "NULL" as their name and list them by 
+their grades in descending order. If there is more than one student with the same grade (1-7) assigned to them, order those 
+particular students by their marks in ascending order.
+
+-- select case when g.grade<8 then "NULL" else s.name end,g.grade,s.marks from students s inner join grades g on s.marks 
+between g.min_mark and g.max_mark order by g.grade desc,s.name,s.marks asc;
+
+19. P(R) represents a pattern drawn by Julia in R rows. The following pattern represents P(5):
+
+* * * * * 
+* * * * 
+* * * 
+* * 
+*
+Write a query to print the pattern P(20).
+
+-- declare @i int = 20
+while @i>0
+begin
+    print replicate('* ',@i)
+    set @i=@i-1
+end;
+
+20. P(R) represents a pattern drawn by Julia in R rows. The following pattern represents P(5):
+
+* 
+* * 
+* * * 
+* * * * 
+* * * * *
+Write a query to print the pattern P(20).
+
+-- declare @i int =1
+while @i<21
+begin 
+    print replicate('* ',@i)
+    set @i=@i+1
+end;
+
+21. 
+
+
